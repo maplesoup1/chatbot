@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, FormEvent } from "react";
+import React, { useState, useEffect, FormEvent, KeyboardEvent } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
@@ -16,6 +16,7 @@ const Home: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (!input.trim()) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -51,6 +52,13 @@ const Home: React.FC = () => {
       }
     } catch (error) {
       console.error("Fetch error:", error);
+    }
+  };
+
+  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
     }
   };
 
@@ -91,11 +99,12 @@ const Home: React.FC = () => {
             placeholder="Say something to our bot"
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
           <Button
             type="submit"
             size="icon"
-            disabled={!input}
+            disabled={!input.trim()}
             className="absolute top-1/2 transform -translate-y-1/2 right-4 rounded-full"
           >
             <Send size={24} />
